@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>verificationcode_2</title>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .code {
+        font-family: Arial;
+        font-style: italic;
+        color: red;
+        border: 0;
+        padding: 2px 3px;
+        letter-spacing: 3px;
+        font-weight: bolder;
+      }
+      .unchangeed {
+        border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="#">
+      <input type="text" id="input1" />
+      <input
+        type="text"
+        onclick="createCode()"
+        readonly="readonly"
+        id="checkCode"
+        class="unchanged"
+        style="width: 80px; background: #660099"
+      /><br />
+      <button id="checkButton">驗證</button>
+    </form>
+    <script language="javascript" type="text/javascript">
+      //https://codertw.com/%E5%89%8D%E7%AB%AF%E9%96%8B%E7%99%BC/278019/
+      var code; //在全域性 定義驗證碼
+      var code2; //在全域性 定義驗證碼
+      function createCode() {
+        code = "";
+        var checkCode = document.getElementById("checkCode");
+        function RndNum(n) {
+          //看幾位數相加
+          //原本的程式這邊好像有問題加號好像都不見了
+          var rnd = "";
+
+          for (var i = 0; i < n; i++) rnd += Math.floor(Math.random() * 10);
+          //字串+數字這邊好像不用特別轉換就是字串
+
+          return rnd;
+        }
+        var num = RndNum(2);
+        var num2 = RndNum(2);
+        code = num + "+" + num2 + "=";
+        //https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/parseInt
+        code2 = parseInt(num) + parseInt(num2);
+        if (checkCode) {
+          checkCode.className = "code";
+          checkCode.value = code;
+        }
+      }
+    </script>
+    <!-- jquery和js分開寫好像還是可以全域共用? -->
+    <script type="text/javascript">
+      $(document).ready(function () {
+        createCode(); //不加沒東西
+        //https://www.w3school.com.cn/jquery/event_blur.asp
+        //$("#input1").blur(function () {//這裡用焦點有點太敏感
+        $("#checkButton").click(function () {
+          var inputCode = document.getElementById("input1").value;
+          if (inputCode.length <= 0) {
+            alert("請輸入驗證碼！");
+          } else if (inputCode != code2) {
+            alert("驗證碼輸入錯誤！");
+            createCode(); //重新整理驗證碼
+          } else {
+            alert("^-^ OK");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td style="width: 70px; height: 40px"><span>驗證碼:</span></td>
+        <td><input type="text" id="Text3" type="text" class="txtCode" /></td>
+        <td><canvas id="canvas" width="120" height="40"></canvas></td>
+      </tr>
+    </table>
+    <script>
+      //https://kknews.cc/zh-tw/code/krbkakb.html
+      window.onload = function () {
+        //window.onload不用加()
+        document.getElementById("Text3").addEventListener("change", defined); //按enter觸發，應該是要送出才知道change
+        //change才判斷一開始(沒送出前)不判斷
+      };
+
+      var code = "";
+
+      function defined() {
+        var text = document.getElementById("Text3").value.toUpperCase();
+
+        function clearAndUpdate() {
+          document.getElementById("Text3").value = "";
+          drawPic();
+        }
+
+        if (text.length < 0) {
+          alert("請輸入驗證碼");
+        } else if (text.length !== 4) {
+          alert("請輸入正確格式驗證碼");
+          clearAndUpdate();
+        } else if (text == code) {
+          alert("通過驗證");
+        } else {
+          alert("驗證碼錯誤");
+          clearAndUpdate();
+        }
+      }
+
+      function randomNum(min, max) {
+        //在max和min之間生成隨機數
+        return Math.floor(Math.random() * (max - min) + min);
+      }
+
+      function randomColor(min, max) {
+        //用rgb生成顏色
+        var r = randomNum(min, max);
+        var g = randomNum(min, max);
+        var b = randomNum(min, max);
+
+        return "rgb(" + r + "," + g + "," + b + ")";
+      }
+
+      //先畫一次圖
+      drawPic();
+
+      //點擊驗證碼則刷新驗證碼
+      window.onload = function () {
+        //不是addeventlistener的寫法
+        document.getElementById("canvas").onclick = function (e) {
+          e.preventDefault();
+          drawPic();
+        };
+      };
+
+      function drawPic() {
+        var canvas = document.getElementById("canvas");
+        var width = canvas.width;
+        var height = canvas.height;
+        //獲取該canvas的2D繪圖環境對象
+        var ctx = canvas.getContext("2d");
+        //設置文本基線是畫布底部
+        ctx.textBaseline = "bottom";
+        //繪製背景色
+        ctx.fillStyle = randomColor(200, 240); //顏色若太深可能導致看不清
+        ctx.fillRect(0, 0, width, height); //畫出矩陣，要記得ctx.fillStyle放在ctx.fillRect哦。??
+
+        //繪製文字
+        var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+        //選擇全部大寫字母和數字，這下知道為啥要把獲取的值轉化為大寫了吧。
+
+        code = ""; //定義一個變量code用於存儲生成的驗證碼
+
+        for (var i = 0; i < 4; i++) {
+          //這裡i<4是生成4為數的驗證碼，for跑4次
+          var txt = str[randomNum(0, str.length)]; //0~3.99所以不會有4
+
+          code += txt; //將隨機生成的數加到code裡
+
+          ctx.fillStyle = randomColor(50, 160); //隨機生成字體顏色
+
+          ctx.font = randomNum(15, 30) + "px SimHei"; //隨機生成字體大小
+
+          var x = 10 + i * 25; //元素在水平方向上的位置，i*25才能照順序左到右?會發現原始間距一樣
+
+          var y = randomNum(25, 35); //元素在豎直方向上的位置，儘量保持在中間，防止部分元素在畫布外。
+
+          var deg = randomNum(-45, 45); //隨機生成旋轉角度
+
+          //修改座標原點和旋轉角度
+          ctx.translate(x, y); //平移元素
+          ctx.rotate((deg * Math.PI) / 180); //旋轉元素
+
+          ctx.fillText(txt, 0, 0);
+
+          //恢復座標原點和旋轉角度(給後面的文字最初定位?)
+          ctx.rotate((-deg * Math.PI) / 180);
+          ctx.translate(-x, -y);
+        }
+
+        //繪製干擾線
+        for (var i = 0; i < 2; i++) {
+          //兩條線
+          ctx.strokeStyle = randomColor(40, 180); //干擾線顏色
+
+          ctx.beginPath(); //開始繪製
+
+          ctx.moveTo(randomNum(0, width), randomNum(0, height)); //起點位置
+
+          ctx.lineTo(randomNum(0, width), randomNum(0, height)); //終點位置
+
+          ctx.stroke();
+        }
+
+        //繪製干擾點
+        for (var i = 0; i < 50; i++) {
+          //50個點
+          ctx.fillStyle = randomColor(0, 255);
+          ctx.beginPath();
+          ctx.arc(randomNum(0, width), randomNum(0, height), 1, 0, 2 * Math.PI);
+          //繪製點，下面說arc函數??
+
+          ctx.fill();
+        }
+
+        //         arc() 方法創建弧/曲線
+
+        // context.arc(x,y,r,sAngle,eAngle,counterclockwise);
+
+        // x圓的中心的 x 坐標。
+
+        // y圓的中心的 y 坐標。
+
+        // r圓的半徑。
+
+        // sAngle起始角，以弧度計。（弧的圓形的三點鐘位置是 0 度）。
+
+        // eAngle結束角，以弧度計。
+
+        // counterclockwise可選。規定應該逆時針還是順時針繪圖。False = 順時針，true = 逆時針。
+      }
+    </script>
+  </body>
+</html>
